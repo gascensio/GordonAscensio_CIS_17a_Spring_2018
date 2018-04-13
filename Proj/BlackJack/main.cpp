@@ -36,7 +36,8 @@ void DealerPlay(Game &G);
 void firstplay(Game &G, short player);
 void continuePlay(Game &G,short player);
 void printEnd(Game G);
-
+void itoa(int n, char[]);
+void reverse(char s[]);
 
 
 
@@ -101,7 +102,7 @@ char *getcard(short card, char *str)
 	if(card%13 == 0)
 		str =(char *)"A";
 	else if(card%13 >= 1 && card%13 < 9)
-		itoa(card%13+1,str,10);
+		itoa(card%13+1,str);
 	else if(card%13 == 9 )
 		str =(char *) "10";
 	else if(card%13 == 10)
@@ -465,4 +466,40 @@ void printEnd(Game G)
 				cout << endl;
 			}
 		}
+}
+/* ********************************************************
+ * Function itoa();
+ * From The C programming language Second Edition
+ * Brian w. Kernighan and Dennis M Ritchie
+ *
+ */
+void itoa(int n, char s[])
+{
+    int i, sign;
+    
+    if((sign = n) < 0) /* record sign */
+        n = -n;
+    i = 0;
+    do{
+        s[i++] = n % 10 + '0';
+    } while((n /= 10) > 0);
+    if(sign < 0)
+        s[i++] = '-';
+    s[i] = '\0';
+    reverse(s);
+}
+/**********************************************************
+ * Function reverse()
+ * From The C programming language Second Edition
+ * Brian w. Kernighan and Dennis M Ritchie 
+ */
+void reverse(char s[])
+{
+    int c, i, j;
+    
+    for(i = 0, j = strlen(s)-1; i < j; i++, j--){
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
 }

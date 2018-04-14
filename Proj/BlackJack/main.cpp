@@ -299,6 +299,8 @@ void printGame(Game &G, bool flag)
 				cout << "Stand";
 			else if(G.Players[i].hand[c].Stat == Bust)
 				cout << "Bust";
+                        else if(G.Players[i].hand[c].Stat == Double)
+                            cout << "Double down.";
 			cout << endl;
 		} 
 	}
@@ -550,7 +552,9 @@ void printEnd(Game G)
 			for(int c = 0;c < G.Players[i].numhands;c++){
 				cout << "hand #" << c+1 << " ";
 				printHand(G.Players[i].hand[c]);
-				if(CountCards(G.Players[i].hand[c]) <= 21 && DealerBust == true)
+                                if(G.Players[i].hand[c].Stat == Surrender)
+                                    cout << "lose";
+				else if(CountCards(G.Players[i].hand[c]) <= 21 && DealerBust == true)
 					cout << "WIN!";
 				else if(CountCards(G.Players[i].hand[c]) > 21)
 					cout << "lose";

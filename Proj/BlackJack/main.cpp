@@ -19,7 +19,6 @@ using namespace std;
 
 char suit(short card);
 char *getcard(short card, char *str);
-//void copydeck(DeckOfCards DeckA, DeckOfCards DeckB);
 void initDeck(Game &G);
 void Shuffle(Game &);
 short DealCard(Game &game);

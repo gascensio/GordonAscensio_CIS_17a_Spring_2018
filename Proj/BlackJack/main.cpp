@@ -36,8 +36,8 @@ void DealerPlay(Game &G);
 void firstplay(Game &G, short player);
 void continuePlay(Game &G,short player);
 void printEnd(Game G);
-void itoa(int n, char[]);
-void reverse(char s[]);
+void itoa(int n, char *s);
+void reverse(char *s);
 
 
 
@@ -71,6 +71,7 @@ int main()
 		cout << "Hit 'Q' to quit or anything else to play again";
 		cin >> ch;
 	}while(toupper(ch) != 'Q');
+        delete game.Deck;
 }
 
 /**********************************************************
@@ -98,21 +99,32 @@ char suit(short card)
  * or digits.
  */
 char *getcard(short card, char *str)
-{
-	if(card%13 == 0)
-		str =(char *)"A";
-	else if(card%13 >= 1 && card%13 < 9)
+{ 
+	if(card%13 == 0){
+		str[0] = 'A';
+                str[1] = '\0';
+        }else if(card%13 >= 1 && card%13 < 9)
 		itoa(card%13+1,str);
-	else if(card%13 == 9 )
-		str =(char *) "10";
-	else if(card%13 == 10)
-		str =(char *)"J";
-	else if(card%13 == 11)
-		str =(char *)"Q";
-	else if(card%13 == 12)
-		str =(char *)"K";
-	else
-		str =(char *)"\0";
+	else if(card%13 == 9 ){
+		str[0]='1';
+                str[1]='0';
+                str[2]='\0';
+        }
+	else if(card%13 == 10){
+            str[0] = 'J';
+            str[1] = '\0';
+        }
+	else if(card%13 == 11){
+            str[0] = 'Q';
+            str[1] = '\0';
+        }
+	else if(card%13 == 12){
+            str[0] = 'K';
+            str[1] = '\0';
+        }
+	else {
+           str[0] = '\0';
+        }
 	return str;
 }
 /**********************************************************
@@ -193,13 +205,15 @@ short CountCards(Hand H)
 {
 	short accum = 0;
 	short aces = 0;
+        int c = 0;
 
-	for(int c = 0;c < H.index; c++){
+	for(c = 0;c < H.index; c++){
 		if(CardVelue(H.cards[c]) == 11)
 			aces++;
 		if(CardVelue(H.cards[c]) < 1)
-				return -1;
-		accum += CardVelue(H.cards[c]);
+
+                    return -1;
+        	accum += CardVelue(H.cards[c]);
 	}
 	while(accum > 21 && aces > 0){
 		accum -= 10; //subtracts 10 for an ace.
@@ -215,9 +229,10 @@ short CountCards(Hand H)
 short CardVelue(short card)
 {
 	char *str = new char[3];
-	short i;
+	short i = 0;
 
 	str = getcard(card, str);
+       
 
 	if(str[0] == 'A')
 		i = 11;
@@ -227,8 +242,8 @@ short CardVelue(short card)
 		i = (short)atoi(str);
 	else
 		i = -1;
-	delete str;
-	return i;
+	delete str; 
+	return i; 
 
 }
 void initGame(Game &G)
@@ -275,7 +290,7 @@ void printGame(Game &G, bool flag)
 	cout << endl << endl;
 
 	for(int i = 0;i < G.numplayers;i++){
-		cout << "Player #" << i+1 << endl;;
+		cout << "Player #" << i+1 << endl;
 		for(int c = 0;c < G.Players[i].numhands;c++){
 			cout << "hand #" << c+1 << " ";
 			printHand(G.Players[i].hand[c]);
@@ -288,7 +303,7 @@ void printGame(Game &G, bool flag)
 			else if(G.Players[i].hand[c].Stat == Bust)
 				cout << "Bust";
 			cout << endl;
-		}
+		} 
 	}
 }
 
@@ -299,6 +314,7 @@ void firstplay(Game &G, short player)
 	char ch;
 	bool can_split = false;
 	bool loop;
+        short t;
 
 	printGame(G,false);
 	if(CountCards(G.Players[player].hand[0]) == 21){
@@ -473,7 +489,7 @@ void printEnd(Game G)
  * Brian w. Kernighan and Dennis M Ritchie
  *
  */
-void itoa(int n, char s[])
+void itoa(int n, char *s)
 {
     int i, sign;
     
@@ -493,7 +509,7 @@ void itoa(int n, char s[])
  * From The C programming language Second Edition
  * Brian w. Kernighan and Dennis M Ritchie 
  */
-void reverse(char s[])
+void reverse(char *s)
 {
     int c, i, j;
     

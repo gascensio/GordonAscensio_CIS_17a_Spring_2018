@@ -33,13 +33,11 @@ void startGame(Game &G, short );
 void printGame(Game &G, bool flag);
 void DealerPlay(Game &G);
 void firstplay(Game &G, short player);
+void firstplay(Game &G, short player, short h);
 void continuePlay(Game &G,short player);
 void printEnd(Game G);
 void itoa(int n, char s[]);
 void reverse(char s[]);
-
-
-
 
 int main()
 {
@@ -62,7 +60,7 @@ int main()
 		cin.ignore();
 		startGame(game, numplayers);
 		for(int c = 0;c < game.numplayers;c++){
-			firstplay(game,c);
+			//firstplay(game,c);
 			continuePlay(game,c);
 		}
 		DealerPlay(game);
@@ -305,16 +303,16 @@ void printGame(Game &G, bool flag)
 		} 
 	}
 }
-
-
+/*
+ * 
+ */
 void firstplay(Game &G, short player)
 {
 	char str[3], arg[3];
 	char ch;
 	bool can_split = false;
 	bool loop;
-        short t;
-
+        
 	printGame(G,false);
 	if(CountCards(G.Players[player].hand[0]) == 21){
 			cout << "BlackJack!" << endl;
@@ -356,6 +354,7 @@ void firstplay(Game &G, short player)
 			loop = false;
 			break;
 		case 'Q':
+                    delete G.Deck;
 			exit(0);
 		default:
 			if(toupper(ch) == 'P' && can_split == true){
@@ -377,21 +376,107 @@ void firstplay(Game &G, short player)
 	return;
 
 }
+void firstplay(Game &G, short player, short h)
+{
+	char str[3], arg[3];
+	char ch;
+	bool can_split = false;
+	bool loop;
+        short index = G.Players[player].numhands;
+        
+        
+	printGame(G,false);
+	if(CountCards(G.Players[player].hand[h]) == 21){
+			cout << "BlackJack!" << endl;
+	}else if(strcmp(getcard(G.Players[player].hand[h].cards[0],str),
+			getcard(G.Players[player].hand[h].cards[1],arg)) == 0){
+            if(index < MAX_HANDS)
+		can_split = true;
+            else
+                can_split = false;
+	}
+	cout << "Player #" << player + 1 << " type 'H' to Hit, 'S' to Stand, 'D' to Double Down, ";
+	if(can_split == true){
+		cout << "'U' to Surrender, and 'P' to Split.";
+	}else{
+		cout <<"and 'U' to Surrender.";
+	}
+	do{
+		ch = cin.get();
+		switch(toupper(ch)){
+		case 'H':
+			G.Players[player].hand[h].Stat = Hit;
+			G.Players[player].hand[h].cards[2] = DealCard(G);
+			G.Players[player].hand[h].index++;
+			if(CountCards(G.Players[player].hand[0]) > 21)
+				G.Players[player].hand[h].Stat = Bust;
+			loop = false;
+			break;
+		case 'S':
+			G.Players[player].hand[h].Stat = Stand;
+			loop = false;
+			break;
+		case 'D':
+			G.Players[player].hand[h].Stat = Double;
+			G.Players[player].hand[h].cards[2] = DealCard(G);
+			G.Players[player].hand[h].index++;
+			if(CountCards(G.Players[player].hand[h]) > 21)
+				G.Players[player].hand[h].Stat = Bust;
+			loop = false;
+			break;
+		case 'U':
+			G.Players[player].hand[h].Stat = Surrender;
+			loop = false;
+			break;
+		case 'Q':
+                    delete G.Deck;
+			exit(0);
+		default:
+			if(toupper(ch) == 'P' && can_split == true){
+				G.Players[player].hand[index].cards[0] = G.Players[player].hand[0].cards[1];
+				G.Players[player].hand[h].cards[1] = DealCard(G);
+				G.Players[player].hand[index].cards[1] = DealCard(G);
+				G.Players[player].hand[h].Stat = first;
+				G.Players[player].hand[index].Stat = first;
+				G.Players[player].numhands = 2;
+				G.Players[player].hand[index].index = 2;
+				loop = false;
+			}else {
+			cout << "invalid choice try again" << endl;
+			loop = true;
+			}
+		}
+		cin.ignore();
+	}while(loop == true);
+	return;
+
+}
 void continuePlay(Game &G, short player)
 {
 	short total;
 	char ch;
 	bool loop;
 	int hands = G.Players[player].numhands;
-	int i = 0;
-	if(G.Players[player].hand[0].Stat == Stand ||
-			G.Players[player].hand[0].Stat == Bust||
-			G.Players[player].hand[0].Stat == Double||
-			G.Players[player].hand[0].Stat == Surrender){
-		return;
-	}
+	int i = 0, test = hands;
+        
 	do{
-		hands--;
+            hands--;
+             firstplay(G, player, i);
+                if(test < G.Players[player].numhands){
+                    test = G.Players[player].numhands;
+                    hands++;  
+                }
+            if(G.Players[player].hand[i].Stat == Stand ||
+                    G.Players[player].hand[i].Stat == Bust||
+                    G.Players[player].hand[i].Stat == Double||
+                    G.Players[player].hand[i].Stat == Surrender){
+                if (i = G.Players[player].numhands)
+                    return;
+                else
+                    i++;
+                
+            }else{
+               
 		do{
 			printGame(G,false);
 			total = CountCards(G.Players[player].hand[i]);
@@ -405,16 +490,15 @@ void continuePlay(Game &G, short player)
 			cout << " type 'H' to Hit, and 'S' to Stand." << endl;
 			ch = cin.get();
 			if(toupper(ch) == 'H'){
-				G.Players[player].hand[i].Stat = Hit;
 				G.Players[player].hand[i].cards[G.Players[player].hand[i].index] = DealCard(G);
 				G.Players[player].hand[i].index++;
 				if(CountCards(G.Players[player].hand[i]) > 21){
 					G.Players[player].hand[i].Stat = Bust;
-					// cin.ignore();
 					loop = false;
-				}else
+				}else{
 					loop = true;
-				cout << "index=" << G.Players[player].hand[i].index << endl;
+                                        G.Players[player].hand[i].Stat = Hit;
+                                }
 			}else if(toupper(ch) == 'S'){
 				G.Players[player].hand[i].Stat = Stand;
 				loop = false;
@@ -424,13 +508,13 @@ void continuePlay(Game &G, short player)
 			if(CountCards(G.Players[player].hand[i]) > 21){
 				G.Players[player].hand[i].Stat = Bust;
 				cout << "Player #" << player + 1 << " hand #"<< i + 1 << " is bust!" << endl;
-				//cin.ignore();
 				loop = false;
 			}
 			cin.ignore();
 		}while(loop == true);
 
 		i++;
+            }
 	}while(hands > 0);
 
 }

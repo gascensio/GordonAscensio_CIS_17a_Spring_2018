@@ -36,8 +36,8 @@ void DealerPlay(Game &G);
 void firstplay(Game &G, short player);
 void continuePlay(Game &G,short player);
 void printEnd(Game G);
-void itoa(int n, char *s);
-void reverse(char *s);
+void itoa(int n, char s[]);
+void reverse(char s[]);
 
 
 
@@ -489,7 +489,7 @@ void printEnd(Game G)
  * Brian w. Kernighan and Dennis M Ritchie
  *
  */
-void itoa(int n, char *s)
+void itoa(int n, char s[])
 {
     int i, sign;
     
@@ -509,7 +509,7 @@ void itoa(int n, char *s)
  * From The C programming language Second Edition
  * Brian w. Kernighan and Dennis M Ritchie 
  */
-void reverse(char *s)
+void reverse(char s[])
 {
     int c, i, j;
     

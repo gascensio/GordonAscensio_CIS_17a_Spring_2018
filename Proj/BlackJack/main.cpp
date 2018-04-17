@@ -32,7 +32,6 @@ void initHand(Hand &H);
 void startGame(Game &G, short );
 void printGame(Game &G, bool flag);
 void DealerPlay(Game &G);
-void firstplay(Game &G, short player);
 void firstplay(Game &G, short player, short h);
 void continuePlay(Game &G,short player);
 void printEnd(Game G);
@@ -49,10 +48,10 @@ int main()
 
 	srand(seed);
 	do{
-		initGame(game);
-		Shuffle(game);
+		initGame(game); // Initialize the deck and players.
+		Shuffle(game);	// Shuffles deck of cards.
 		cout << "Number of players between 1 and 5?";
-		cin >> numplayers;
+		cin >> numplayers; // Gets number of players
 		while(numplayers < 1 || numplayers > 5){
 			cout << "out of bounds try again";
 			cin >> numplayers;
@@ -60,7 +59,6 @@ int main()
 		cin.ignore();
 		startGame(game, numplayers);
 		for(int c = 0;c < game.numplayers;c++){
-			//firstplay(game,c);
 			continuePlay(game,c);
 		}
 		DealerPlay(game);
@@ -96,7 +94,7 @@ char suit(short card)
  * or digits.
  */
 char *getcard(short card, char *str)
-{ 
+{
 	if(card%13 == 0){
 		str[0] = 'A';
                 str[1] = '\0';
@@ -164,6 +162,10 @@ short DealCard(Game &G)
 	G.index++;
 	return card;
 }
+/**********************************************************
+ * Function firstDeal()
+ * Function deals the first round of cards.
+ */
 void firstDeal(Game &game)
 {
 	const int NUMPLAYERS = game.numplayers;
@@ -229,7 +231,7 @@ short CardVelue(short card)
 	short i = 0;
 
 	str = getcard(card, str);
-       
+
 
 	if(str[0] == 'A')
 		i = 11;
@@ -239,145 +241,92 @@ short CardVelue(short card)
 		i = (short)atoi(str);
 	else
 		i = -1;
-	delete str; 
-	return i; 
+	delete str;
+	return i;
 
 }
+/**********************************************************
+ * Function initializes a structure of type Game
+ */
 void initGame(Game &G)
 {
 	for(int i = 0;i < MAX_CARDS;i++)
-	G.Dealer.cards[i] = -1;
-	G.Dealer.Stat = first;
+	G.Dealer.cards[i] = -1; //Sets all the cards in the Dealers hand.
+	G.Dealer.Stat = first;	//Sets the Status to first card.
 
-	for(int c = 0;c < MAX_PLAYERS;c++)
+	for(int c = 0;c < MAX_PLAYERS;c++) //Initializes each player.
 		initPlayer(G.Players[c]);
 	initDeck(G);
 
 }
+/**********************************************************
+ * Function initializes a struct type Player
+ */
 void initPlayer(Player &P)
 {
-	P.numhands = 0;
-	for(int c = 0;c < MAX_HANDS;c++)
-		initHand(P.hand[c]);
+	P.numhands = 0; // Sets number of hands the player has to zero.
+	for(int c = 0;c < MAX_HANDS;c++) 	// Initializes each possible hand in the
+		initHand(P.hand[c]);			// a player structure.
 }
+/**********************************************************
+ * Function initializes a structure type Hand.
+ */
 void initHand(Hand &H)
 {
 	int i;
-	for(i=0;i<MAX_CARDS;i++)
+	for(i=0;i<MAX_CARDS;i++) // Sets each card to -1.
 		H.cards[i]=-1;
-	H.Stat = Not_Used;
+	H.Stat = Not_Used; // Sets status flag to not used.
 	H.bet = 0;
 	H.index = 0;
 }
+/**********************************************************
+ * Function sets the number of players for a game
+ * and Deals the first cards.
+ */
 void startGame(Game &G, short numplayers)
 {
 	G.numplayers = numplayers;
 	firstDeal(G);
 }
+/**********************************************************
+ * Function prints the current game to screen.
+ */
 void printGame(Game &G, bool flag)
 {
 	char str[3];
 
-	system("cls");
+	system("cls"); // Clears the screen.
 	cout << "Dealers: ";
-	if(flag == false)
+	if(flag == false)	//Prints one card if flag is true.
 		cout << getcard(G.Dealer.cards[0],str) << suit(G.Dealer.cards[0]);
-	else
+	else	//Prints the Dealers entire hand if flag is false.
 		printHand(G.Dealer);
 	cout << endl << endl;
 
 	for(int i = 0;i < G.numplayers;i++){
 		cout << "Player #" << i+1 << endl;
-		for(int c = 0;c < G.Players[i].numhands;c++){
-			cout << "hand #" << c+1 << " ";
+		for(int c = 0;c < G.Players[i].numhands;c++){// Runs through each hand of a player,
+			cout << "hand #" << c+1 << " ";			// and prints each hand out.
 			printHand(G.Players[i].hand[c]);
-			if(G.Players[i].hand[c].Stat == first)
-				cout << "start of hand.";
-			else if(G.Players[i].hand[c].Stat == Surrender)
-				cout << "Surrender";
-			else if(G.Players[i].hand[c].Stat == Stand)
+			if(G.Players[i].hand[c].Stat == first)	// Prints "start of hand" if status is
+				cout << "start of hand.";			// first.
+			else if(G.Players[i].hand[c].Stat == Surrender)// Prints "Surrender" if status is
+				cout << "Surrender";						// Surrender.
+			else if(G.Players[i].hand[c].Stat == Stand)	// Prints "Stand" if status is Stand.
 				cout << "Stand";
-			else if(G.Players[i].hand[c].Stat == Bust)
+			else if(G.Players[i].hand[c].Stat == Bust)	// Prints "Bust" if status is Bust.
 				cout << "Bust";
-                        else if(G.Players[i].hand[c].Stat == Double)
-                            cout << "Double down.";
+			else if(G.Players[i].hand[c].Stat == Double)
+            	cout << "Double down.";
 			cout << endl;
-		} 
-	}
-}
-/*
- * 
- */
-void firstplay(Game &G, short player)
-{
-	char str[3], arg[3];
-	char ch;
-	bool can_split = false;
-	bool loop;
-        
-	printGame(G,false);
-	if(CountCards(G.Players[player].hand[0]) == 21){
-			cout << "BlackJack!" << endl;
-	}else if(strcmp(getcard(G.Players[player].hand[0].cards[0],str),
-			getcard(G.Players[player].hand[0].cards[1],arg)) == 0){
-		can_split = true;
-	}
-	cout << "Player #" << player + 1 << " type 'H' to Hit, 'S' to Stand, 'D' to Double Down, ";
-	if(can_split == true){
-		cout << "'U' to Surrender, and 'P' to Split.";
-	}else{
-		cout <<"and 'U' to Surrender.";
-	}
-	do{
-		ch = cin.get();
-		switch(toupper(ch)){
-		case 'H':
-			G.Players[player].hand[0].Stat = Hit;
-			G.Players[player].hand[0].cards[2] = DealCard(G);
-			G.Players[player].hand[0].index++;
-			if(CountCards(G.Players[player].hand[0]) > 21)
-				G.Players[player].hand[0].Stat = Bust;
-			loop = false;
-			break;
-		case 'S':
-			G.Players[player].hand[0].Stat = Stand;
-			loop = false;
-			break;
-		case 'D':
-			G.Players[player].hand[0].Stat = Double;
-			G.Players[player].hand[0].cards[2] = DealCard(G);
-			G.Players[player].hand[0].index++;
-			if(CountCards(G.Players[player].hand[0]) > 21)
-				G.Players[player].hand[0].Stat = Bust;
-			loop = false;
-			break;
-		case 'U':
-			G.Players[player].hand[0].Stat = Surrender;
-			loop = false;
-			break;
-		case 'Q':
-                    delete G.Deck;
-			exit(0);
-		default:
-			if(toupper(ch) == 'P' && can_split == true){
-				G.Players[player].hand[1].cards[0] = G.Players[player].hand[0].cards[1];
-				G.Players[player].hand[0].cards[1] = DealCard(G);
-				G.Players[player].hand[1].cards[1] = DealCard(G);
-				G.Players[player].hand[0].Stat = first;
-				G.Players[player].hand[1].Stat = first;
-				G.Players[player].numhands = 2;
-				G.Players[player].hand[1].index = 2;
-				loop = false;
-			}else {
-			cout << "invalid choice try again" << endl;
-			loop = true;
-			}
 		}
-		cin.ignore();
-	}while(loop == true);
-	return;
-
+	}
 }
+/**********************************************************
+ * Function firstplay()
+ * plays the first hand for each player.
+ */
 void firstplay(Game &G, short player, short h)
 {
 	char str[3], arg[3];
@@ -385,8 +334,8 @@ void firstplay(Game &G, short player, short h)
 	bool can_split = false;
 	bool loop;
         short index = G.Players[player].numhands;
-        
-        
+
+
 	printGame(G,false);
 	if(CountCards(G.Players[player].hand[h]) == 21){
 			cout << "BlackJack!" << endl;
@@ -453,6 +402,9 @@ void firstplay(Game &G, short player, short h)
 	return;
 
 }
+/*
+ *
+ */
 void continuePlay(Game &G, short player)
 {
 	short total;
@@ -460,25 +412,25 @@ void continuePlay(Game &G, short player)
 	bool loop;
 	int hands = G.Players[player].numhands;
 	int i = 0, test = hands;
-        
+
 	do{
             hands--;
              firstplay(G, player, i);
                 if(test < G.Players[player].numhands){
                     test = G.Players[player].numhands;
-                    hands++;  
+                    hands++;
                 }
             if(G.Players[player].hand[i].Stat == Stand ||
                     G.Players[player].hand[i].Stat == Bust||
                     G.Players[player].hand[i].Stat == Double||
                     G.Players[player].hand[i].Stat == Surrender){
-                if (i = G.Players[player].numhands)
+                if (i == G.Players[player].numhands)
                     return;
                 else
                     i++;
-                
+
             }else{
-               
+
 		do{
 			printGame(G,false);
 			total = CountCards(G.Players[player].hand[i]);
@@ -579,7 +531,7 @@ void printEnd(Game G)
 void itoa(int n, char s[])
 {
     int i, sign;
-    
+
     if((sign = n) < 0) /* record sign */
         n = -n;
     i = 0;
@@ -594,12 +546,12 @@ void itoa(int n, char s[])
 /**********************************************************
  * Function reverse()
  * From The C programming language Second Edition
- * Brian w. Kernighan and Dennis M Ritchie 
+ * Brian w. Kernighan and Dennis M Ritchie
  */
 void reverse(char s[])
 {
     int c, i, j;
-    
+
     for(i = 0, j = strlen(s)-1; i < j; i++, j--){
         c = s[i];
         s[i] = s[j];

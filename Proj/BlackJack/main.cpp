@@ -306,8 +306,9 @@ void printGame(Game &G, bool flag)
 
 	for(int i = 0;i < G.numplayers;i++){
 		cout << "Player #" << i+1 << endl;
-		for(int c = 0;c < G.Players[i].numhands;c++){// Runs through each hand of a player,
-			cout << "hand #" << c+1 << " ";			// and prints each hand out.
+		for(int c = 0;c < G.Players[i].numhands;c++){// Runs through 
+                                                       //each hand of a player,
+			cout << "hand #" << c+1 << " ";//and prints each hand out.
 			printHand(G.Players[i].hand[c]);
 			if(G.Players[i].hand[c].Stat == first)	// Prints "start of hand" if status is
 				cout << "start of hand.";			// first.
@@ -346,7 +347,8 @@ void firstplay(Game &G, short player, short h)
             else
                 can_split = false;
 	}
-	cout << "Player #" << player + 1 << " type 'H' to Hit, 'S' to Stand, 'D' to Double Down, ";
+	cout << "Player #" << player + 1 
+                << " type 'H' to Hit, 'S' to Stand, 'D' to Double Down, ";
 	if(can_split == true){
 		cout << "'U' to Surrender, and 'P' to Split.";
 	}else{
@@ -384,9 +386,11 @@ void firstplay(Game &G, short player, short h)
 			exit(0);
 		default:
 			if(toupper(ch) == 'P' && can_split == true){
-				G.Players[player].hand[index].cards[0] = G.Players[player].hand[0].cards[1];
+				G.Players[player].hand[index].cards[0] 
+                                        = G.Players[player].hand[0].cards[1];
 				G.Players[player].hand[h].cards[1] = DealCard(G);
-				G.Players[player].hand[index].cards[1] = DealCard(G);
+				G.Players[player].hand[index].cards[1] 
+                                        = DealCard(G);
 				G.Players[player].hand[h].Stat = first;
 				G.Players[player].hand[index].Stat = first;
 				G.Players[player].numhands = 2;
@@ -461,7 +465,8 @@ void continuePlay(Game &G, short player)
 			}
 			if(CountCards(G.Players[player].hand[i]) > 21){
 				G.Players[player].hand[i].Stat = Bust;
-				cout << "Player #" << player + 1 << " hand #"<< i + 1 << " is bust!" << endl;
+				cout << "Player #" << player + 1 << " hand #"
+                                        << i + 1 << " is bust!" << endl;
 				loop = false;
 			}
 			cin.ignore();
@@ -506,17 +511,21 @@ void printEnd(Game G)
 				printHand(G.Players[i].hand[c]);
                                 if(G.Players[i].hand[c].Stat == Surrender)
                                     cout << "lose";
-				else if(CountCards(G.Players[i].hand[c]) <= 21 && DealerBust == true)
+				else if(CountCards(G.Players[i].hand[c]) 
+                                        <= 21 && DealerBust == true)
 					cout << "WIN!";
 				else if(CountCards(G.Players[i].hand[c]) > 21)
 					cout << "lose";
-				else if(CountCards(G.Players[i].hand[c]) == CountCards(G.Dealer) )
+				else if(CountCards(G.Players[i].hand[c]) 
+                                        == CountCards(G.Dealer) )
 					cout << "Push";
-				else if(CountCards(G.Players[i].hand[c]) < CountCards(G.Dealer)
+				else if(CountCards(G.Players[i].hand[c]) 
+                                        < CountCards(G.Dealer)
 						&& DealerBust == false)
 					cout << "lose";
-				else if(CountCards(G.Players[i].hand[c]) > CountCards(G.Dealer)
-						&& CountCards(G.Players[i].hand[c])<= 21)
+				else if(CountCards(G.Players[i].hand[c]) 
+                                        > CountCards(G.Dealer) && 
+                                        CountCards(G.Players[i].hand[c])<= 21)
 					cout << "WIN";
 				cout << endl;
 			}
@@ -548,13 +557,13 @@ void itoa(int n, char s[])
  * From The C programming language Second Edition
  * Brian w. Kernighan and Dennis M Ritchie
  */
-void reverse(char s[])
+void reverse(char *s)
 {
     int c, i, j;
 
     for(i = 0, j = strlen(s)-1; i < j; i++, j--){
-        c = s[i];
-        s[i] = s[j];
-        s[j] = c;
+        c = *(s+i);
+        *(s+i) = *(s+j);
+        *(s+j) = c;
     }
 }

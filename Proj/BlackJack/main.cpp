@@ -50,7 +50,7 @@ int main()
 	do{
 		initGame(game); // Initialize the deck and players.
 		Shuffle(game);	// Shuffles deck of cards.
-		cout << "Number of players between 1 and 5?";
+		cout << "Enter the number of players (between 1 and 5)?";
 		cin >> numplayers; // Gets number of players
 		while(numplayers < 1 || numplayers > 5){
 			cout << "out of bounds try again";

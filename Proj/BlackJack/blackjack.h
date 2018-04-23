@@ -10,7 +10,7 @@
 
 const int DECK_SIZE = 52;
 const int MAX_CARDS = 12;
-const int MAX_HANDS = 2;
+const int MAX_HANDS = 4;
 const int MAX_PLAYERS = 5;
 
 // enum {Hit, Stand, Double, Split, Surrender};
@@ -39,6 +39,27 @@ struct Game{
 	short index;
 	short decksize;
 };
+
+char suit(short card);
+char *getcard(short card, char *str);
+void initDeck(Game &G);
+void Shuffle(Game &);
+short DealCard(Game &game);
+void firstDeal(Game &game);
+void printHand(Hand hand);
+short CountCards(Hand H);
+short CardVelue(short card);
+void initGame(Game &G);
+void initPlayer(Player &P);
+void initHand(Hand &H);
+void startGame(Game &G, short );
+void printGame(Game &G, bool flag);
+void DealerPlay(Game &G);
+void firstplay(Game &G, short player, short h);
+void continuePlay(Game &G,short player);
+void printEnd(Game G);
+void itoa(int n, char s[]);
+void reverse(char s[]);
 
 
 

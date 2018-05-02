@@ -27,6 +27,7 @@ private:
     static string thousand;
     static string TentoNinety[10];
 public:
+    Numbers(){this->number = 0;}
     Numbers(int num);
     void print()const;
     void operator=(const int number){

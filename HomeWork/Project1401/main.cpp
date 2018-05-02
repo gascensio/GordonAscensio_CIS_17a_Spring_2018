@@ -25,7 +25,6 @@ int main(int argc, char** argv) {
     Numbers N(789);
     int n;
     
-    
     cout << "Enter a number form 0 to 9999?";
     cin >> n;
     while(n < 0 || n > 9999)
